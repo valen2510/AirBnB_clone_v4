@@ -10,7 +10,7 @@ $(document).ready(function () {
     }
     $('.amenities h4').text(amenities.join(', ')).css({ width: '220px', height: '16px', overflow: 'hidden', 'text-overflow': 'ellipsis', 'white-space': 'nowrap' });
   });
-  $.get('http://localhost:5001/api/v1/status/', function (data) {
+  $.get('http://0.0.0.0:5001/api/v1/status/', function (data) {
     if (data.status === 'OK') {
       $('#api_status').addClass('available');
     } else {
