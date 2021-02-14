@@ -24,8 +24,6 @@ $(document).ready(function () {
     contentType: 'application/json',
     dataType: 'json',
     success: function (data) {
-      // TITULO Y PRECIO
-
       for (let i = 0; i < data.length; i++) {
         $('section.places').append('<article></article>');
         $('.places article:last-child').append('<div class="title_box"></div>');
