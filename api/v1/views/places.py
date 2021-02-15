@@ -5,6 +5,7 @@ from models.city import City
 from models.place import Place
 from models.user import User
 from models.amenity import Amenity
+from models.review import Review
 from models import storage
 from api.v1.views import app_views
 from flask import abort, jsonify, make_response, request
@@ -134,15 +135,30 @@ def places_search():
         states = data.get('states', None)
         cities = data.get('cities', None)
         amenities = data.get('amenities', None)
+        reviews = data.get('reviews', None)
+        users = data.get('users', None)
 
     if not data or not len(data) or (
             not states and
             not cities and
             not amenities):
         places = storage.all(Place).values()
+        reviews = storage.all(Review).values()
+        users = storage.all(User).values()
         list_places = []
         for place in places:
             list_places.append(place.to_dict())
+        for place in list_places:
+            place['review'] = []
+            for review_obj in reviews:
+                review_obj = review_obj.to_dict()
+                if review_obj['place_id'] == place['id']:
+                    for user in users:
+                        user = user.to_dict()
+                        if review_obj['user_id'] == user['id']:
+                            review_obj['name_user'] = user['first_name'] + ' ' + user['last_name']
+                            break
+                    place['review'].append(review_obj)
         return jsonify(list_places)
 
     list_places = []
@@ -176,5 +192,18 @@ def places_search():
         d = p.to_dict()
         d.pop('amenities', None)
         places.append(d)
+    reviews = storage.all(Review).values()
+    users = storage.all(User).values()
+    for place in places:
+        place['review'] = []
+        for review_obj in reviews:
+            review_obj = review_obj.to_dict()
+            if review_obj['place_id'] == place['id']:
+                for user in users:
+                    user = user.to_dict()
+                    if review_obj['user_id'] == user['id']:
+                        review_obj['name_user'] = user['first_name'] + ' ' + user['last_name']
+                        break
+                place['review'].append(review_obj)
 
     return jsonify(places)
